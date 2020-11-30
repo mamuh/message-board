@@ -5,13 +5,11 @@ class MessagesController < ApplicationController
   end
 
   def create
-    message = Message.new(message_params)
-    if message.save
-      ActionCable.server.broadcast 'messages_channel', message
-      head :ok
-    else
-      head :ok
+    message = Message.create(message_params)
+    if message.valid?
+      ActionCable.server.broadcast 'messages_channel', message.content
     end
+    render json: message
   end
 
   private
