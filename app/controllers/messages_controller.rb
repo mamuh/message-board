@@ -5,8 +5,9 @@ class MessagesController < ApplicationController
   end
 
   def create
-    message = Message.create(message_params)
-    if message.valid?
+    message = Message.new(message_params)
+    if message.save
+      MessagesChannel.broadcast_to('messages_channel', {messages: Message.all})
       ActionCable.server.broadcast 'messages_channel', message.content
     end
     render json: message
